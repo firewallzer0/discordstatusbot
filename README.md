@@ -1,3 +1,7 @@
-# Pre-requisites are:
-pip install discord
-pip install influxdb
+[[_TOC__]]
+
+
+
+## Pre-requisites:
+* pip install discord
+* pip install influxdb
