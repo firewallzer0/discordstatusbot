@@ -1,12 +1,12 @@
 from influxdb import InfluxDBClient
 from datetime import datetime as dt
-
+import time
 
 def vmwareGetStatus():
     #######################
     # Configure variables #
     #######################
-    debugVMwareStatus = True  # Change to True to see debugging logs
+    debugVMwareStatus = False  # Change to True to see debugging logs
     relativeTime = '1h'  # How far back in the database to look m=minutes, h=hours, d=days, w=weeks
 
     ############################
@@ -35,7 +35,7 @@ def vmwareGetStatus():
     pwrMessageESX01 = None
     pwrMessageESX02 = None
 
-
+    print('I: %s -- Querying database now...' % str(dt.now()))  # Console logging
     cpuResults = dbClient.query('SELECT percentile("usage_average", 95) FROM "vsphere_host_cpu" WHERE ("vcenter" = \'10.1.1.46\') AND (time >= now() - 30m)')  # Database Query
     # cpuResults = dbClient.query('SELECT percentile("usage_average", 95) FROM "vsphere_host_cpu" WHERE (esxhostname = \'10.1.1.9\') AND (time >= now() - 30m)')  # Database Query
     for cpuUsage in cpuResults:
@@ -61,15 +61,36 @@ def vmwareGetStatus():
         clusterPWRusageESX02 = str(round(pwrUsageESX02[0]["Watts"]))
         pwrMessageESX02 = ('Power usage for ESX02 is: %s Watts' % clusterPWRusageESX02)
 
+    uptimeResults = dbClient.query('SELECT last("uptime_latest") AS "Uptime" FROM "vsphere_host_sys" WHERE ("vcenter" = \'10.1.1.46\' AND "clustername" = \'Cluster 1\') AND time >= now() - 30m')
+    for totalUptime in uptimeResults:
+        # print(totalUptime)
+        uptimeValue = int(totalUptime[0]["Uptime"])
+        seconds = uptimeValue % (7 * 24 * 3600)
+        seconds %= (7 * 24 * 3600)
+        weeks = seconds // (7 * 24 * 3600)
+        seconds %= (7 * 24 * 3600)
+        days = seconds // (24 * 3600)
+        seconds %= (24 * 3600)
+        hours = seconds // 3600
+        seconds %= 3600
+        minutes = seconds // 60
+        seconds %= 60
+        epochTime = int(time.time())
+        startUptime = epochTime - uptimeValue
+        startTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(startUptime))
+        uptimeMessage = "The servers has been up for %d week(s), %d day(s), %d hour(s), %d minute(s), %d second(s)" % (weeks, days, hours, minutes, seconds)
+        startMessage = "The server(s) have been up since: %s" % startTime
+
+
     if pwrMessageESX01 == None:
         if pwrMessageESX02 == None:
-            return [cpuMessage, ramMessage]
+            return [startMessage, cpuMessage, ramMessage, uptimeMessage]
         else:
-            return [cpuMessage, ramMessage, pwrMessageESX02]
+            return [startMessage,cpuMessage, ramMessage, pwrMessageESX02, uptimeMessage]
     else:
         if pwrMessageESX02 == None:
-            return [cpuMessage, ramMessage, pwrMessageESX01]
+            return [startMessage, cpuMessage, ramMessage, pwrMessageESX01, uptimeMessage]
         else:
-            return [cpuMessage, ramMessage, pwrMessageESX01, pwrMessageESX02]
+            return [startMessage, cpuMessage, ramMessage, pwrMessageESX01, pwrMessageESX02, uptimeMessage]
 
 # print(vmwareGetStatus())

@@ -32,14 +32,14 @@ def dbListener():
     dbUser = open("keys/dbUser.key", "r").read()  # Retrieve database user from file
     dbPassword = open("keys/dbPassword.key", "r").read()  # Retrieve database password from file
     dbHostname = '10.10.10.171'  # Change to your database's IP or host name
-    dbPort = 8086  # Change to your database's port; Default is 8086
+    dbPort = 8086  # Change to your database's port; Default is 8086 for influxdb
     dbName = 'truenas'  # Change to the name of the database you want to work on
 
     print('I: %s -- Creating connection to database...' % str(dt.now()))  # Console logging
 
     dbClient = InfluxDBClient(host=dbHostname, port=dbPort, username=dbUser, password=dbPassword)  # Connect to database
     if debugDBListner:  # Debug console logging
-        print('D: %s -- Switching to truenas database...' % str(dt.now()))  # Debug console logging
+        print('D: %s -- Switching to %s database...' % (str(dt.now()), dbName))  # Debug console logging
     dbClient.switch_database('%s' % dbName)  # Select the database you what to use.
 
     # hashedData = 0  # Initialize default values
