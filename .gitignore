@@ -1,0 +1,9 @@
+# Ignore all key files
+*.key
+
+# Ignore all files in the following folder
+venv/*
+.idea/*
+__pycache__/*
+
+# Ignoring the gitignore file seems redundant 
