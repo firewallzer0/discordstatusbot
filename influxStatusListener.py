@@ -77,7 +77,7 @@ def dbListener():
                     print('I: %s -- Calling webhook... \n %s' % (str(dt.now()), notice))    # Console logging
 
                     # Call the webhook passing the address from file and the message built above and the user to mention
-                    webhook(url=str(open("keys/discordWebHook-codersChannel.key", "r").read()), message=notice, discordUser=user)
+                    webhook(url=str(open("keys/discordWebHook-serversStatusChannel.key", "r").read()), message=notice, discordUser=user)
         if debugDBListner:                                                                   # Debug console logging
             print('D: %s -- Sleeping for %d seconds...' % (str(dt.now()), timer))   # Debug console logging
         sleep(timer)                                                # How often do you want to poll the database? Set above

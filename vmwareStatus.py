@@ -36,6 +36,7 @@ def vmwareGetStatus():
     pwrMessageESX02 = None
 
     print('I: %s -- Querying database now...' % str(dt.now()))  # Console logging
+
     cpuResults = dbClient.query('SELECT percentile("usage_average", 95) FROM "vsphere_host_cpu" WHERE ("vcenter" = \'10.1.1.46\') AND (time >= now() - 30m)')  # Database Query
     # cpuResults = dbClient.query('SELECT percentile("usage_average", 95) FROM "vsphere_host_cpu" WHERE (esxhostname = \'10.1.1.9\') AND (time >= now() - 30m)')  # Database Query
     for cpuUsage in cpuResults:
@@ -49,7 +50,6 @@ def vmwareGetStatus():
         ramMessage = 'RAM usage is: %s%s' % (clusterRAMusage, percentSign)
 
     pwrResultsESX01 = dbClient.query('SELECT mean("power_average") AS "Watts" FROM "vsphere_host_power" WHERE ("esxhostname" = \'10.1.1.7\' AND time >= now() - 30m)')  # Database Query
-
     for pwrUsageESX01 in pwrResultsESX01:
         # print(pwrUsageESX01)
         clusterPWRusageESX01 = str(round(pwrUsageESX01[0]["Watts"]))
