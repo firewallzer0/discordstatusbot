@@ -1,14 +1,14 @@
 import json
 from influxdb import InfluxDBClient
 from datetime import datetime as dt
-
+import hashlib
 
 
 def importSpeedtest():
 
     debugSpeedtest = True
     pathTofile = 'example/example.json'
-    pathToHash = '/opt/speedtest/latest.sha256'
+    pathToHash = 'example/latest.sha256'
 
     ############################
     # Setup for database calls #
@@ -31,13 +31,39 @@ def importSpeedtest():
 
     dbClient.switch_database('%s' % dbName)  # Select the database you what to use.
 
-
+    if debugSpeedtest:  # Debug console logging
+        print('D: %s -- Opening JSON...' % (str(dt.now())))  # Debug console logging
 
     with open(pathTofile) as jsonFile:
         jsonData = json.load(jsonFile)
-        print(jsonData)
+    if debugSpeedtest:  # Debug console logging
+        print('D: %s -- Opened JSON, now hashing...' % (str(dt.now())))  # Debug console logging
+    hashedJson = hashlib.sha1(str(jsonData).encode('utf-8')).hexdigest()
+
+    if debugSpeedtest:  # Debug console logging
+        print('D: %s -- Comparing Hashes...' % (str(dt.now())))  # Debug console logging
+
+    oldHash = open(pathToHash, "r+")
+    if (oldHash.read()) == hashedJson:
+        print(hashedJson)
+        oldHash.close()
+    else:
+        print(hashedJson)
+        print(oldHash)
+        oldHash.truncate(0)
+        oldHash.write(hashedJson)
+        oldHash.close()
+        dbClient.write_points(jsonData,database=dbName)
+
+
+
+
 
     dbClient.close()
-
+#    download = round(jsonData['download'])
+#    upload = round(jsonData['upload'])
+#    ping = jsonData['ping']
+#    isp = jsonData['client']['isp']
+#    print("%.2f" %download)
 
 importSpeedtest()
