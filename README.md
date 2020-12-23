@@ -3,7 +3,8 @@
 [[_TOC_]]
 
 # Contributors
-David R. Trask @fw0
+David R. Trask @firewallzer0
+Ryan Chen @ryanscodebay
 
 # Pre-requisites:
 * pip install discord
@@ -23,6 +24,6 @@ David R. Trask @fw0
     - [ ] CPU utilization
     - [ ] Memory utilization
     - [ ] Bandwidth utilization
-    - [ ] (Run Speed Test and return results) OR (Get the latest results from scheduled script)
+    - [x] (Run Speed Test and return results) OR (Get the latest results from scheduled script)
 - [x] Write InfluxDB poller
 - [x] Write webhook caller

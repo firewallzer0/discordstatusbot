@@ -5,6 +5,7 @@ from discord.ext import commands
 from datetime import datetime
 from influxStatusListener import dbListener
 from vmwareStatus import vmwareGetStatus
+from getSpeedTest import getSpeedTest
 
 debug_Flag = False
 # Store the bot version and release date
@@ -31,9 +32,12 @@ async def test():
 
 
 @bot.command()
-async def invokeMessage(channel, message):
-    await channel.send('Echoing Terminal: %s' % message)
-
+async def speedtest(ctx):
+    channel = bot.get_channel(ctx.channel.id)
+    user = bot.get_user(ctx.author.id)
+    if debug_Flag:
+        print('D: %s -- Received the following command: "speedtest" from %s in channel %s' % (datetime.now(), user, channel))
+    await channel.send(getSpeedTest())
 
 @bot.command()
 async def status(ctx):
