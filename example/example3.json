@@ -1,0 +1,13 @@
+{
+  "measurement": "network_stats",
+  "tags": {
+    "isp": "TDS Telecom"
+  },
+  "fields": {
+    "download": 687554734.7735907,
+    "upload": 19718293.283063106,
+    "ping": 29.07,
+    "host": "FC Connexion",
+    "time": "2020-12-22T16:57:56.641486Z"
+  }
+}

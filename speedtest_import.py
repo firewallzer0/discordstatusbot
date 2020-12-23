@@ -2,11 +2,11 @@ import json
 from influxdb import InfluxDBClient
 from datetime import datetime as dt
 import hashlib
+from time import sleep
 
 
 def importSpeedtest():
-
-    debugSpeedtest = True
+    debugSpeedtest = False
     pathTofile = 'example/example.json'
     pathToHash = 'example/latest.sha256'
 
@@ -46,24 +46,49 @@ def importSpeedtest():
     oldHash = open(pathToHash, "r+")
     if (oldHash.read()) == hashedJson:
         print(hashedJson)
+        if debugSpeedtest:  # Debug console logging
+            print('D: %s -- Hashes are the same...' % (str(dt.now())))  # Debug console logging
+
         oldHash.close()
     else:
-        print(hashedJson)
-        print(oldHash)
+        if debugSpeedtest:  # Debug console logging
+            print('D: %s -- Hashes are the different...' % (str(dt.now())))  # Debug console logging
+
+        # print(hashedJson)
+        # print(oldHash)
+        if debugSpeedtest:  # Debug console logging
+            print('D: %s -- Deleting old hash and writing new one...' % (str(dt.now())))
         oldHash.truncate(0)
         oldHash.write(hashedJson)
         oldHash.close()
-        dbClient.write_points(jsonData,database=dbName)
+        if debugSpeedtest:  # Debug console logging
+            print('D: %s -- Getting data we care about...' % (str(dt.now())))
+        download = round(jsonData['download'])
+        upload = round(jsonData['upload'])
+        ping = jsonData['ping']
+        isp = jsonData['client']['isp']
+        host = jsonData['server']['sponsor']
+        time = jsonData['timestamp']
+        if debugSpeedtest:  # Debug console logging
+            print('D: %s -- Building new JSON in memory...' % (str(dt.now())))
+        jsonBuilder = json.loads(
+            '{"measurement": "network_stats","tags": {"isp": "%s"},"fields": {"download": "%d", "upload": "%d", "ping": "%.2f", "host": "%s", "time": "%s"}}' % (
+            isp, download, upload, ping, host, str(time)))
+        builderList = [jsonBuilder]
+        if debugSpeedtest:  # Debug console logging
+            print('D: %s -- Passing new JSON/List to database...' % (str(dt.now())))
+        dbClient.write_points(builderList, database=dbName)
 
-
-
-
-
+    print('I: %s -- Closing database connection...' % (str(dt.now())))
     dbClient.close()
-#    download = round(jsonData['download'])
-#    upload = round(jsonData['upload'])
-#    ping = jsonData['ping']
-#    isp = jsonData['client']['isp']
-#    print("%.2f" %download)
 
-importSpeedtest()
+
+def main():
+    while True:
+        print('I: %s -- Waking up and calling function' % str(dt.now()))
+        importSpeedtest()
+        print('I: %s -- Sleeping for 5 minutes...' % (str(dt.now())))
+        sleep(300)
+
+
+main()
