@@ -121,9 +121,11 @@ class webhookThread(threading.Thread):
     def run(self):
         dbListener()
 
-
+print('I: %s -- Starting the Discord Bot Thread...' % datetime.now())
 botThread = discordThread()
-botThread.start()
+botThread.run()
+
+print('I: %s -- Starting the webhook Thread...' % datetime.now())
 whThread = webhookThread()
 whThread.start()
 print('I: %s -- Started all threads!' % datetime.now())
