@@ -42,6 +42,3 @@ def getSpeedTest():
         message = "Download Speed is: %d Megabits per second\nUpload Speed is: %d Megabits per second\nCurrent ping time is: %f milliseconds\nLast test was against: %s" % (download, upload, ping, host)
         #print(message)
         return message
-
-
-print(getSpeedTest())
