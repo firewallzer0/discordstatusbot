@@ -123,7 +123,7 @@ class webhookThread(threading.Thread):
 
 print('I: %s -- Starting the Discord Bot Thread...' % datetime.now())
 botThread = discordThread()
-botThread.run()
+botThread.start()
 
 print('I: %s -- Starting the webhook Thread...' % datetime.now())
 whThread = webhookThread()
