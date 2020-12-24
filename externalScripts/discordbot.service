@@ -7,12 +7,11 @@ Wants=network.target
 User=discord
 Group=discord
 PIDFile=/opt/discordstatusbot/running.pid
-KillMode=SIGTERM
 SuccessExitStatus=0 1 SIGKILL
 NoNewPrivileges=true
 PrivateTmp=true
-InaccessibleDirectories=/root /sys /srv /home /media /lost+found
-ReadWriteDirectories=/opt/data /var/log
+InaccessiblePaths=/root /sys /srv /home /media /lost+found
+ReadWritePaths=/opt/data /var/log
 WorkingDirectory=/opt/discordstatusbot
 
 ExecStart=/opt/discordstatusbot/startDiscordBot.sh

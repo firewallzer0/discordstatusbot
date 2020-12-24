@@ -1,5 +1,5 @@
 #!/bin/bash
 echo "Running git pull..."
-/bin/git -c http.sslVerify=false pull
+/bin/cd /opt/discordstatusbot && /bin/git -c http.sslVerify=false pull
 echo "Calling Python Script..."
-/bin/python3 discordBotThreaded.py
+/bin/python3 /opt/discordstatusbot/discordBotThreaded.py
