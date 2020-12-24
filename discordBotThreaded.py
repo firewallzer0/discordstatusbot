@@ -27,7 +27,7 @@ announceChannel = open('keys/announceChannel.key',"r").read()
 keysPath = "/opt/discordstatusbot/keys/"
 apiKeyPath = keysPath + "api.key"
 ownerIDPath = keysPath + "ownerID"
-ownerID = open(keysPath, "r").read()
+ownerID = open(ownerIDPath, "r").read()
 gameName = "Global Thermonuclear War"
 
 ##########################
