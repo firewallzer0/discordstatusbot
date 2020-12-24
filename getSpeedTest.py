@@ -18,7 +18,7 @@ def getSpeedTest():
         print('D: %s -- Get Speed Test -- Initializing for database connection...' % str(dt.now()))  # Debug console logging
 
     dbUser = 'statsbot'  # Set database user
-    dbPassword = open("keys/statsDBpassword.key", "r").read()  # Retrieve database password from file
+    dbPassword = open("/opt/data/discordstatusbot/keys/statsDBpassword.key", "r").read()  # Retrieve database password from file
     dbHostname = '10.10.10.77'  # Change to your database's IP or host name
     dbPort = 8086  # Change to your database's port; Default is 8086
     dbName = 'speed-test'  # Change to the name of the database you want to work on
