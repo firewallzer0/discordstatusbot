@@ -6,6 +6,7 @@ from datetime import datetime
 from influxStatusListener import dbListener
 from vmwareStatus import vmwareGetStatus
 from getSpeedTest import getSpeedTest
+from speedtest_import import importSpeedtest
 
 
 ########################################################################################################################
@@ -132,10 +133,22 @@ class webhookThread(threading.Thread):
         dbListener()
 
 
+class speedtestThread(threading.Thread):
+    def __init__(self):
+        super(speedtestThread, self).__init__()
+
+    def run(self):
+        importSpeedtest()
+
+
 def main():
-    ('I: %s -- Main Thread -- Starting the webhook Thread...' % datetime.now())
+    print('I: %s -- Main Thread -- Starting the webhook Thread...' % datetime.now())
     whThread = webhookThread()
     whThread.start()
+
+    print('I: %s -- Main Thread -- Starting the speedtest Thread...' % datetime.now())
+    spTestThread = speedtestThread()
+    spTestThread.start()
 
     print('I: %s -- Main Thread -- Starting the Discord Bot Thread...' % datetime.now())
     bot.run(apiKey)

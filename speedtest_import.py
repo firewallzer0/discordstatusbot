@@ -87,14 +87,6 @@ def importSpeedtest():
 
     print('I: %s -- Speed test -- Closing database connection...' % (str(dt.now())))
     dbClient.close()
+    print('I: %s -- Speed test -- Sleeping for 5 minutes...' % (str(dt.now())))
+    sleep(300)
 
-
-def main():
-    while True:
-        print('I: %s -- Speed test -- Waking up and calling function' % str(dt.now()))
-        importSpeedtest()
-        print('I: %s -- Speed test -- Sleeping for 5 minutes...' % (str(dt.now())))
-        sleep(300)
-
-
-main()
