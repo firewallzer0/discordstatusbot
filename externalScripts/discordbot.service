@@ -1,0 +1,21 @@
+[Unit]
+Description=My Discord Bot minion
+After=network.target
+Wants=network.target
+
+[Service]
+User=discord
+Group=discord
+PIDFile=/opt/discordstatusbot/running.pid
+KillMode=SIGTERM
+SuccessExitStatus=0 1 SIGKILL
+NoNewPrivileges=true
+PrivateTmp=true
+InaccessibleDirectories=/root /sys /srv /home /media /lost+found
+ReadWriteDirectories=/opt/data /var/log
+WorkingDirectory=/opt/discordstatusbot
+
+ExecStart=/opt/discordstatusbot/startDiscordBot.sh
+
+[Install]
+WantedBy=multi-user.target
