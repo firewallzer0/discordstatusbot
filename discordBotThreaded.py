@@ -1,7 +1,6 @@
 # Import necessary libraries
 import discord
 import threading
-import asyncio
 from discord.ext import commands
 from datetime import datetime
 from influxStatusListener import dbListener
@@ -124,7 +123,7 @@ def main():
     # botThread = discordThread()
     # botThread.start()
     bot.run(apiKey)
-    print('I: %s -- Started all threads!' % datetime.now())
+    print('I: %s -- Kill signal received!' % datetime.now())
 
 
 main()
