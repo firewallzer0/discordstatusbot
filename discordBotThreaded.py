@@ -22,10 +22,11 @@ debug_Flag = True
 # Store the bot version and release date
 ver = ['v0.0.2', '2020-12-24']
 
-ownerID = open('keys/ownerID', "r").read()
+ownerID = open('ownerID', "r").read()
 announceChannel = open('keys/announceChannel.key',"r").read()
 keysPath = "/opt/discordstatusbot/keys/"
 apiKeyPath = keysPath + "api.key"
+ownerID = open(keysPath + 'ownerID', "r").read()
 gameName = "Global Thermonuclear War"
 
 ##########################
