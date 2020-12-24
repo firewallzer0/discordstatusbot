@@ -8,11 +8,17 @@ from vmwareStatus import vmwareGetStatus
 from getSpeedTest import getSpeedTest
 
 
+########################################################################################################################
+#                                      NEED TO ADD MORE VARIABLES aka debug setting passed to all sub-scripts
+########################################################################################################################
+
+
+
 ######################
 # Startup Variables  #
 ######################
 
-debug_Flag = False
+debug_Flag = True
 # Store the bot version and release date
 ver = ['v0.0.2', '2020-12-24']
 
@@ -28,10 +34,10 @@ gameName = "Global Thermonuclear War"
 
 
 botStartTime = datetime.now()
-print('I: %s -- Starting bot...' % botStartTime)
+print('I: %s -- Main Thread -- Starting bot...' % botStartTime)
 
 bot = discord.Client()
-print('I: %s -- Created bot client' % datetime.now())
+print('I: %s -- Main Thread -- Created bot client' % datetime.now())
 
 # Prefix to be entered before commands
 bot = commands.Bot(command_prefix='servers.')
@@ -60,14 +66,14 @@ async def status(ctx):
     channel = bot.get_channel(ctx.channel.id)
     user = bot.get_user(ctx.author.id)
     if debug_Flag:
-        print('D: %s -- Received this info from ctx.channel.id: %s' % (datetime.now(), channel))
+        print('D: %s -- Main Thread -- Received this info from ctx.channel.id: %s' % (datetime.now(), channel))
     vmwareStats = vmwareGetStatus()
     for eachStat in vmwareStats:
         await channel.send(eachStat)
     if debug_Flag:
-        print('D: %s -- Received the following command: "status" from %s in channel %s' % (datetime.now(), user, channel))
+        print('D: %s -- Main Thread -- Received the following command: "status" from %s in channel %s' % (datetime.now(), user, channel))
     else:
-        print('I: %s -- Received Request for Status' % datetime.now())
+        print('I: %s -- Main Thread -- Received Request for Status' % datetime.now())
 
 
 ######################
@@ -85,12 +91,12 @@ async def on_ready():
 
 @bot.event
 async def on_connect():
-    print('I: %s -- Connected to Discord!' % datetime.now())
+    print('I: %s -- Main Thread -- Connected to Discord!' % datetime.now())
 
 
 @bot.event
 async def on_disconnect():
-    print("W: %s -- Disconnected from Discord!" % datetime.now())
+    print("W: %s -- Main Thread -- Disconnected from Discord!" % datetime.now())
 
 
 @bot.event
@@ -100,7 +106,7 @@ async def on_message(message):
 
     if debug_Flag:
         channel = bot.get_channel(message.channel.id)
-        print('D: %s -- Received a message in channel: %s from %s' % (datetime.now(), channel, message.author.display_name))
+        print('D: %s -- Main Thread -- Received a message in channel: %s from %s' % (datetime.now(), channel, message.author.display_name))
     if message.content.startswith('Hello'):
        if message.author.id != ownerID:
             await message.channel.send('Hello %s you seem nice.' % message.author.display_name)
@@ -123,13 +129,13 @@ class webhookThread(threading.Thread):
 
 
 def main():
-    ('I: %s -- Starting the webhook Thread...' % datetime.now())
+    ('I: %s -- Main Thread -- Starting the webhook Thread...' % datetime.now())
     whThread = webhookThread()
     whThread.start()
 
-    print('I: %s -- Starting the Discord Bot Thread...' % datetime.now())
+    print('I: %s -- Main Thread -- Starting the Discord Bot Thread...' % datetime.now())
     bot.run(apiKey)
-    print('I: %s -- Kill signal received!' % datetime.now())
+    print('I: %s -- Main Thread -- Kill signal received!' % datetime.now())
 
 
 main()
