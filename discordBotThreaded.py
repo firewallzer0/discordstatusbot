@@ -86,12 +86,7 @@ async def on_ready():
     print('I: %s -- Ready as {0.user}'.format(bot) % rightNow)
     readyChannel = bot.get_channel(announceChannel)
     await readyChannel.send('Server minions are online!')
-    await bot.change_presence(activity=discord.Game(name=gameName)
-
-
-@bot.event
-async def on_connect():
-    print('I: %s -- Main Thread -- Connected to Discord!' % datetime.now())
+    await bot.change_presence(activity=discord.Game(name=gameName))
 
 
 @bot.event
@@ -115,6 +110,10 @@ async def on_message(message):
 
     await bot.process_commands(message)
 
+
+@bot.event
+async def on_connect():
+    print('I: %s -- Main Thread -- Connected to Discord!' % datetime.now())
 
 # Load API key from external file
 apiKey = open(apiKeyPath, "r").read()
