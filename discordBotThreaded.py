@@ -27,7 +27,7 @@ keysPath = "/opt/discordstatusbot/keys/"
 
 
 apiKeyPath = keysPath + "api.key"
-ownerIDPath = keysPath + "ownerID"
+ownerIDPath = keysPath + "ownerID.key"
 announceChannelPath = keysPath + "announcementChannel.key"
 announceChannel = open(announceChannelPath,"r").read()
 ownerID = open(ownerIDPath, "r").read()
