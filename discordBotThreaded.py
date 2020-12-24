@@ -7,9 +7,25 @@ from influxStatusListener import dbListener
 from vmwareStatus import vmwareGetStatus
 from getSpeedTest import getSpeedTest
 
+
+######################
+# Startup Variables  #
+######################
+
 debug_Flag = False
 # Store the bot version and release date
-ver = ['v0.0.1', '2020-12-17']
+ver = ['v0.0.2', '2020-12-24']
+
+ownerID = open('keys/ownerID', "r").read()
+announceChannel = open('keys/announceChannel.key',"r").read()
+keysPath = "/opt/discordstatusbot/keys/"
+apiKeyPath = keysPath + "api.key"
+gameName = "Global Thermonuclear War"
+
+##########################
+# Initialize Discord Bot #
+##########################
+
 
 botStartTime = datetime.now()
 print('I: %s -- Starting bot...' % botStartTime)
@@ -62,9 +78,9 @@ async def status(ctx):
 async def on_ready():
     rightNow = datetime.now()
     print('I: %s -- Ready as {0.user}'.format(bot) % rightNow)
-    readyChannel = bot.get_channel(790375117292568576)
+    readyChannel = bot.get_channel(announceChannel)
     await readyChannel.send('Server minions are online!')
-    await bot.change_presence(activity=discord.Game(name='Global Thermonuclear War'))
+    await bot.change_presence(activity=discord.Game(name=gameName)
 
 
 @bot.event
@@ -84,26 +100,18 @@ async def on_message(message):
 
     if debug_Flag:
         channel = bot.get_channel(message.channel.id)
-        print('D: %s -- Received a message in channel: %s from %s' % (
-            datetime.now(), channel, message.author.display_name))
+        print('D: %s -- Received a message in channel: %s from %s' % (datetime.now(), channel, message.author.display_name))
     if message.content.startswith('Hello'):
-        if message.author.id == 172064604942237697:
-            await message.channel.send('Hey, fuck you buddy, stop repressing me. You communist swine!')
-        elif message.author.id == 188448821565456384:
-            await message.channel.send('Hello, master. We are here to serve.')
-        elif message.author.id == 133243837555408898:
-            await message.channel.send('Hey %s my man. *finger guns*' % message.author.display_name)
-        else:
+       if message.author.id != ownerID:
             await message.channel.send('Hello %s you seem nice.' % message.author.display_name)
-
-    if message.channel.id == 616348858972242012:
-        print('D: %s -- Received the following message: %s'.format(bot) % (datetime.now(), message.content))
+       else:
+            await message.channel.send('Hello, master. We are here to serve.')
 
     await bot.process_commands(message)
 
 
 # Load API key from external file
-apiKey = open("keys/api.key", "r").read()
+apiKey = open(apiKeyPath, "r").read()
 
 
 class webhookThread(threading.Thread):
@@ -120,8 +128,6 @@ def main():
     whThread.start()
 
     print('I: %s -- Starting the Discord Bot Thread...' % datetime.now())
-    # botThread = discordThread()
-    # botThread.start()
     bot.run(apiKey)
     print('I: %s -- Kill signal received!' % datetime.now())
 
