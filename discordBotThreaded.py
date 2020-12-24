@@ -1,6 +1,7 @@
 # Import necessary libraries
 import discord
 import threading
+import asyncio
 from discord.ext import commands
 from datetime import datetime
 from influxStatusListener import dbListener
@@ -17,7 +18,7 @@ print('I: %s -- Starting bot...' % botStartTime)
 bot = discord.Client()
 print('I: %s -- Created bot client' % datetime.now())
 
-# Prefix to be entered before commmands
+# Prefix to be entered before commands
 bot = commands.Bot(command_prefix='servers.')
 
 
@@ -25,10 +26,9 @@ bot = commands.Bot(command_prefix='servers.')
 # Bot Commands Section #
 ########################
 @bot.command()
-async def test():
-    if debug_Flag:
-        print('D: %s -- Received Test Command!' % datetime.now())
-    pass
+async def bottime(ctx):
+    channel = bot.get_channel(ctx.channel.id)
+    await channel.send("Bot has been running since: %s" % str(botStartTime))
 
 
 @bot.command()
@@ -38,6 +38,7 @@ async def speedtest(ctx):
     if debug_Flag:
         print('D: %s -- Received the following command: "speedtest" from %s in channel %s' % (datetime.now(), user, channel))
     await channel.send(getSpeedTest())
+
 
 @bot.command()
 async def status(ctx):
@@ -106,14 +107,6 @@ async def on_message(message):
 apiKey = open("keys/api.key", "r").read()
 
 
-class discordThread(threading.Thread):
-    def __init__(self):
-        super(discordThread, self).__init__()
-
-    def run(self):
-        bot.run(apiKey)
-
-
 class webhookThread(threading.Thread):
     def __init__(self):
         super(webhookThread, self).__init__()
@@ -121,11 +114,17 @@ class webhookThread(threading.Thread):
     def run(self):
         dbListener()
 
-print('I: %s -- Starting the Discord Bot Thread...' % datetime.now())
-botThread = discordThread()
-botThread.start()
 
-print('I: %s -- Starting the webhook Thread...' % datetime.now())
-whThread = webhookThread()
-whThread.start()
-print('I: %s -- Started all threads!' % datetime.now())
+def main():
+    ('I: %s -- Starting the webhook Thread...' % datetime.now())
+    whThread = webhookThread()
+    whThread.start()
+
+    print('I: %s -- Starting the Discord Bot Thread...' % datetime.now())
+    # botThread = discordThread()
+    # botThread.start()
+    bot.run(apiKey)
+    print('I: %s -- Started all threads!' % datetime.now())
+
+
+main()
