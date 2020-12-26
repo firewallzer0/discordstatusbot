@@ -1,13 +1,13 @@
 {
   "measurement": "network_stats",
   "tags": {
-    "isp": "TDS Telecom"
+    "isp": "<Redacted>"
   },
   "fields": {
     "download": 700025159.0,
     "upload": 19093213.0,
     "ping": 27.366,
-    "host": "FC Connexion",
+    "host": "<Redacted>",
     "time": "2020-12-23T00:17:22.159670Z"
   }
 }

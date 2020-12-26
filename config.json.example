@@ -1,0 +1,17 @@
+{
+  "configVersion": "1.0.0",
+  "apiKey": "qWeRtY1234uIoP5678ASDFGhjkl",
+  "ownerID": "123456789011121314",
+  "announcementChannelID": "123456789011121314",
+  "statusChannelWebhook" : "https://discord.com/api/webhooks/123456789011121314/QBqWHil9T",
+  "gameName": "Global Thermonuclear War",
+  "dbUser": "statsbot",
+  "dbPassword": "Somepassword1234",
+  "dbHost": "192.168.0.257",
+  "dbPort": "8086",
+  "vmwareStatsDB": "vmwareStats",
+  "truenasNotifyDB": "truenas",
+  "speedTestDB": "speedTest",
+  "mention": "True",
+  "debug": "True"
+}

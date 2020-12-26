@@ -1,5 +1,6 @@
 from influxdb import InfluxDBClient
 from datetime import datetime as dt
+import json
 
 debugGetSpeedTest = True
 
@@ -14,14 +15,19 @@ debugGetSpeedTest = True
 
 def getSpeedTest():
 
+    configFile = open('config.json', "r")
+    config = json.load(configFile)
+    debugGetSpeedTest = config['debug']
+
+
     if debugGetSpeedTest:  # Debug console logging
         print('D: %s -- Get Speed Test -- Initializing for database connection...' % str(dt.now()))  # Debug console logging
 
-    dbUser = 'statsbot'  # Set database user
-    dbPassword = open("/opt/discordstatusbot/keys/statsDBpassword.key", "r").read()  # Retrieve database password from file
-    dbHostname = '10.10.10.77'  # Change to your database's IP or host name
-    dbPort = 8086  # Change to your database's port; Default is 8086
-    dbName = 'speed-test'  # Change to the name of the database you want to work on
+    dbUser = config['dbUser']  # Set database user
+    dbPassword = config['dbPassword']  # Retrieve database password from file
+    dbHostname = config['dbHost']  # Change to your database's IP or host name
+    dbPort = config['dbPort']  # Change to your database's port; Default is 8086
+    dbName = config['speedTestDB']  # Change to the name of the database you want to work on
 
     print('I: %s -- Get Speed Test -- Creating connection to database...' % str(dt.now()))  # Console logging
     dbClient = InfluxDBClient(host=dbHostname, port=dbPort, username=dbUser, password=dbPassword)  # Connect to database

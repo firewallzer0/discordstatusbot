@@ -6,4 +6,5 @@ venv/*
 .idea/*
 __pycache__/*
 
-# Ignoring the gitignore file seems redundant 
+# Ignore the config
+config.json

@@ -1,12 +1,19 @@
 from influxdb import InfluxDBClient
 from datetime import datetime as dt
 import time
+import json
 
+
+# noinspection PyUnresolvedReferences
 def vmwareGetStatus():
     #######################
     # Configure variables #
     #######################
-    debugVMwareStatus = False  # Change to True to see debugging logs
+    configFile = open('config.json', "r")
+    config = json.load(configFile)
+
+
+    debugVMwareStatus = config['debug']  # Change to True to see debugging logs
     relativeTime = '1h'  # How far back in the database to look m=minutes, h=hours, d=days, w=weeks
 
     ############################
@@ -16,11 +23,11 @@ def vmwareGetStatus():
     if debugVMwareStatus:  # Debug console logging
         print('D: %s -- Initializing for database connection...' % str(dt.now()))  # Debug console logging
 
-    dbUser = 'statsbot'  # Set database user
-    dbPassword = open("keys/statsDBpassword.key", "r").read()  # Retrieve database password from file
-    dbHostname = '10.10.10.77'  # Change to your database's IP or host name
-    dbPort = 8086  # Change to your database's port; Default is 8086
-    dbName = 'vmware-esx'  # Change to the name of the database you want to work on
+    dbUser = config['dbUser']  # Set database user
+    dbPassword = config['dbPassword']  # Retrieve database password from file
+    dbHostname = config['dbHost']  # Change to your database's IP or host name
+    dbPort = config['dbPort']  # Change to your database's port; Default is 8086
+    dbName = config['vmwareStatsDB']  # Change to the name of the database you want to work on
 
     print('I: %s -- Creating connection to database...' % str(dt.now()))  # Console logging
 
@@ -79,7 +86,7 @@ def vmwareGetStatus():
         startUptime = epochTime - uptimeValue
         startTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(startUptime))
         uptimeMessage = "The servers has been up for %d week(s), %d day(s), %d hour(s), %d minute(s), %d second(s)" % (weeks, days, hours, minutes, seconds)
-        startMessage = "The server(s) have been up since: %s" % startTime
+        startMessage = "The servers have been up since: %s" % startTime
 
 
     if pwrMessageESX01 == None:

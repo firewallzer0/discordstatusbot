@@ -1,6 +1,7 @@
 # Import necessary libraries
 import discord
 import threading
+import json
 from discord.ext import commands
 from datetime import datetime
 from influxStatusListener import dbListener
@@ -13,34 +14,8 @@ from speedtest_import import importSpeedtest
 #                                      NEED TO ADD MORE VARIABLES aka debug setting passed to all sub-scripts
 ########################################################################################################################
 
-
-
-######################
-# Startup Variables  #
-######################
-
-debug_Flag = True
-# Store the bot version and release date
-ver = ['v0.0.2', '2020-12-24']
-
-
-keysPath = "/opt/discordstatusbot/keys/"
-
-
-apiKeyPath = keysPath + "api.key"
-ownerIDPath = keysPath + "ownerID.key"
-announceChannelPath = keysPath + "announcementChannel.key"
-announceChannel = int(open(announceChannelPath,"r").read())
-ownerID = open(ownerIDPath, "r").read()
-gameName = "Global Thermonuclear War"
-
-##########################
-# Initialize Discord Bot #
-##########################
-
-
+debugFlag = False
 botStartTime = datetime.now()
-print('I: %s -- Main Thread -- Starting bot...' % botStartTime)
 
 bot = discord.Client()
 print('I: %s -- Main Thread -- Created bot client' % datetime.now())
@@ -48,10 +23,42 @@ print('I: %s -- Main Thread -- Created bot client' % datetime.now())
 # Prefix to be entered before commands
 bot = commands.Bot(command_prefix='servers.')
 
+##################
+# Define Classes #
+##################
 
-########################
-# Bot Commands Section #
-########################
+
+class webhookThread(threading.Thread):
+    def __init__(self):
+        super(webhookThread, self).__init__()
+
+    def run(self):
+        dbListener()
+
+
+class speedtestThread(threading.Thread):
+    def __init__(self):
+        super(speedtestThread, self).__init__()
+
+    def run(self):
+        importSpeedtest()
+
+
+####################
+# Define Functions #
+####################
+
+def validateJSON(jsonFile):
+    try:
+        jsonData = json.load(jsonFile)
+    except ValueError as err:
+        return [False, None]
+    return [True, jsonData]
+
+
+#########################
+# Bot Command Functions #
+#########################
 @bot.command()
 async def bottime(ctx):
     channel = bot.get_channel(ctx.channel.id)
@@ -62,7 +69,7 @@ async def bottime(ctx):
 async def speedtest(ctx):
     channel = bot.get_channel(ctx.channel.id)
     user = bot.get_user(ctx.author.id)
-    if debug_Flag:
+    if debugFlag:
         print('D: %s -- Received the following command: "speedtest" from %s in channel %s' % (datetime.now(), user, channel))
     await channel.send(getSpeedTest())
 
@@ -82,9 +89,9 @@ async def status(ctx):
         print('I: %s -- Main Thread -- Received Request for Status' % datetime.now())
 
 
-######################
-# Bot Events Section #
-######################
+#######################
+# Bot Event Functions #
+#######################
 
 @bot.event
 async def on_ready():
@@ -121,27 +128,49 @@ async def on_message(message):
 async def on_connect():
     print('I: %s -- Main Thread -- Connected to Discord!' % datetime.now())
 
-# Load API key from external file
-apiKey = open(apiKeyPath, "r").read()
-
-
-class webhookThread(threading.Thread):
-    def __init__(self):
-        super(webhookThread, self).__init__()
-
-    def run(self):
-        dbListener()
-
-
-class speedtestThread(threading.Thread):
-    def __init__(self):
-        super(speedtestThread, self).__init__()
-
-    def run(self):
-        importSpeedtest()
-
-
 def main():
+
+
+    ##########################
+    # Initialize Discord Bot #
+    ##########################
+
+    print('I: %s -- Main Thread -- Opening and validating config file...' % datetime.now()) # Print console log
+    try:    # Try opening the config file
+        configFile = open('config.json', "r")
+
+    except Exception:   # If it is not there
+        print('E: %s -- Main Thread -- Unable to locate or read config.json...' % datetime.now())
+        exit(1)     # End the program with a status code of 1
+
+
+    isValidConfig, config = validateJSON(configFile)    # Check if the json is valid and get the dictionary passed back.
+
+    if isValidConfig:
+        pass    # If the JSON is valid do nothing
+    else:
+        print('E: %s -- Main Thread -- JSON invalid exiting...' % datetime.now()) 
+        exit(1)
+
+
+
+    ######################
+    # Startup Variables  #
+    ######################
+
+    debugFlag = True
+    # Store the bot version and release date
+    ver = ['v0.1.0', '2020-12-24']
+    apiKey = config['apiKey']
+
+    announceChannel = int()
+    ownerID = int()
+    gameName = "Global Thermonuclear War"
+
+
+    # Prefix to be entered before commands
+    bot = commands.Bot(command_prefix='servers.')
+
     print('I: %s -- Main Thread -- Starting the webhook Thread...' % datetime.now())
     whThread = webhookThread()
     whThread.start()

@@ -2,6 +2,7 @@ from influxdb import InfluxDBClient
 from time import sleep
 from datetime import datetime as dt
 import hashlib
+import json
 from webhookFunction import discordWebhook as webhook
 
 ######################
@@ -12,7 +13,9 @@ def dbListener():
     #######################
     # Configure variables #
     #######################
-    mention = True  # Change to True if you'd like the notice to mention a user
+    configFile = open('config.json', "r")
+    config = json.load(configFile)
+    mention = config['mention']  # Change to True if you'd like the notice to mention a user
     debugDBListner = True  # Change to True to see debugging logs
     timer = 15  # How frequently to poll in seconds
     relativeTime = '5m'  # How far back in the database to look m=minutes, h=hours, d=days, w=weeks
@@ -29,11 +32,11 @@ def dbListener():
 
     if debugDBListner:  # Debug console logging
         print('D: %s -- Status Listener -- Initializing for database connection...' % str(dt.now()))  # Debug console logging
-    dbUser = open("/opt/discordstatusbot/keys/dbUser.key", "r").read()  # Retrieve database user from file
-    dbPassword = open("/opt/discordstatusbot/keys/dbPassword.key", "r").read()  # Retrieve database password from file
-    dbHostname = '10.10.10.171'  # Change to your database's IP or host name
-    dbPort = 8086  # Change to your database's port; Default is 8086 for influxdb
-    dbName = 'truenas'  # Change to the name of the database you want to work on
+    dbUser = config['dbUser']  # Set database user
+    dbPassword = config['dbPassword']  # Retrieve database password from file
+    dbHostname = config['dbHost']  # Change to your database's IP or host name
+    dbPort = config['dbPort']  # Change to your database's port; Default is 8086
+    dbName = config['truenasNotifyDB']  # Change to the name of the database you want to work on
 
     print('I: %s -- Status Listener -- Creating connection to database...' % str(dt.now()))  # Console logging
 
