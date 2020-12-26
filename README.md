@@ -4,6 +4,7 @@
 
 # Contributors
 David R. Trask @firewallzer0
+
 Ryan Chen @ryanscodebay
 
 # Pre-requisites:
@@ -27,3 +28,4 @@ Ryan Chen @ryanscodebay
     - [x] (Run Speed Test and return results) OR (Get the latest results from scheduled script)
 - [x] Write InfluxDB poller
 - [x] Write webhook caller
+- [ ] Re-write to include json config file
