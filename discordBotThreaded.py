@@ -1,27 +1,56 @@
 # Import necessary libraries
 import discord
 import threading
-import json
 from discord.ext import commands
 from datetime import datetime
 from influxStatusListener import dbListener
 from vmwareStatus import vmwareGetStatus
 from getSpeedTest import getSpeedTest
 from speedtest_import import importSpeedtest
+from validateJSON import validateJSON
 
 
 ########################################################################################################################
-#                                      NEED TO ADD MORE VARIABLES aka debug setting passed to all sub-scripts
+#                                      NEED TO ADD MORE VARIABLES aka debug setting passed to all sub-scripts          #
 ########################################################################################################################
 
-debugFlag = False
+###########################
+# Startup Initialization  #
+###########################
+
+print('I: %s -- Main Thread -- Initializing Discord Status Bot...' % datetime.now()) # Print console log
+print('I: %s -- Main Thread -- Opening config file...' % datetime.now())  # Print console log
+try:  # Try opening the config file
+    configFile = open('config.json', "r")
+
+except Exception:  # If it is not there
+    print('E: %s -- Main Thread -- Unable to locate or read config.json...' % datetime.now())
+    configFile.close()
+    exit(1)  # End the program with a status code of 1
+
+isValid = validateJSON(configFile)
+
+
+
+######################
+# Startup Variables  #
+######################
+
+debugFlag = True
+# Store the bot version and release date
+ver = ['v0.1.0', '2020-12-24']
+apiKey = config['apiKey']
+
+announceChannel = int()
+ownerID = int()
+gameName = "Global Thermonuclear War"
+
 botStartTime = datetime.now()
-
 bot = discord.Client()
 print('I: %s -- Main Thread -- Created bot client' % datetime.now())
-
 # Prefix to be entered before commands
 bot = commands.Bot(command_prefix='servers.')
+
 
 ##################
 # Define Classes #
@@ -47,14 +76,6 @@ class speedtestThread(threading.Thread):
 ####################
 # Define Functions #
 ####################
-
-def validateJSON(jsonFile):
-    try:
-        jsonData = json.load(jsonFile)
-    except ValueError as err:
-        return [False, None]
-    return [True, jsonData]
-
 
 #########################
 # Bot Command Functions #
@@ -134,38 +155,6 @@ def main():
     ##########################
     # Initialize Discord Bot #
     ##########################
-
-    print('I: %s -- Main Thread -- Opening and validating config file...' % datetime.now()) # Print console log
-    try:    # Try opening the config file
-        configFile = open('config.json', "r")
-
-    except Exception:   # If it is not there
-        print('E: %s -- Main Thread -- Unable to locate or read config.json...' % datetime.now())
-        exit(1)     # End the program with a status code of 1
-
-
-    isValidConfig, config = validateJSON(configFile)    # Check if the json is valid and get the dictionary passed back.
-
-    if isValidConfig:
-        pass    # If the JSON is valid do nothing
-    else:
-        print('E: %s -- Main Thread -- JSON invalid exiting...' % datetime.now()) 
-        exit(1)
-
-
-
-    ######################
-    # Startup Variables  #
-    ######################
-
-    debugFlag = True
-    # Store the bot version and release date
-    ver = ['v0.1.0', '2020-12-24']
-    apiKey = config['apiKey']
-
-    announceChannel = int()
-    ownerID = int()
-    gameName = "Global Thermonuclear War"
 
 
     # Prefix to be entered before commands
