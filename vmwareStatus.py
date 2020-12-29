@@ -6,13 +6,14 @@ import json
 
 # noinspection PyUnresolvedReferences
 def vmwareGetStatus():
-    #######################
-    # Configure variables #
-    #######################
+
     configFile = open('config.json', "r")
     config = json.load(configFile)
 
 
+    #######################
+    # Configure variables #
+    #######################
     debugVMwareStatus = config['debug']  # Change to True to see debugging logs
     relativeTime = '1h'  # How far back in the database to look m=minutes, h=hours, d=days, w=weeks
 

@@ -9,7 +9,6 @@ from getSpeedTest import getSpeedTest
 from speedtest_import import importSpeedtest
 from validateJSON import validateJSON
 
-
 ########################################################################################################################
 #                                      NEED TO ADD MORE VARIABLES aka debug setting passed to all sub-scripts          #
 ########################################################################################################################
@@ -18,7 +17,7 @@ from validateJSON import validateJSON
 # Startup Initialization  #
 ###########################
 
-print('I: %s -- Main Thread -- Initializing Discord Status Bot...' % datetime.now()) # Print console log
+print('I: %s -- Main Thread -- Initializing Discord Status Bot...' % datetime.now())  # Print console log
 print('I: %s -- Main Thread -- Opening config file...' % datetime.now())  # Print console log
 try:  # Try opening the config file
     configFile = open('config.json', "r")
@@ -28,28 +27,31 @@ except Exception:  # If it is not there
     configFile.close()
     exit(1)  # End the program with a status code of 1
 
-isValid = validateJSON(configFile)
+isValid, config = validateJSON(configFile)
 
-
+if isValid:
+    pass
+else:
+    print('E: %s -- Main Thread -- invalid JSON look at message above for exact error...' % datetime.now())
+    exit(1)
 
 ######################
 # Startup Variables  #
 ######################
-
-debugFlag = True
-# Store the bot version and release date
-ver = ['v0.1.0', '2020-12-24']
+print('I: %s -- Main Thread -- Assigning config file variables...' % datetime.now())  # Print console log
+botVersion = ['v0.1.0', '2020-12-24']  # Store the bot version and release date
+configVersion = config['configVersion']
+debugFlag = config['debug']
 apiKey = config['apiKey']
-
-announceChannel = int()
-ownerID = int()
-gameName = "Global Thermonuclear War"
-
+ownerID = int(config['ownerID'])
+announceChannel = int(config['announcementChannelID'])
+if config['gameName'] is not None:
+    gameName = config['gameName']
 botStartTime = datetime.now()
 bot = discord.Client()
 print('I: %s -- Main Thread -- Created bot client' % datetime.now())
 # Prefix to be entered before commands
-bot = commands.Bot(command_prefix='servers.')
+bot = commands.Bot(command_prefix=config['commandPrefix'])  # Prefix to be entered before commands
 
 
 ##################
@@ -87,6 +89,12 @@ async def bottime(ctx):
 
 
 @bot.command()
+async def botversion(ctx):
+    channel = bot.get_channel(ctx.channel.id)
+    await channel.send('Bot version is %s\nConfig version is %s' % botVersion, configVersion)
+
+
+@bot.command()
 async def speedtest(ctx):
     channel = bot.get_channel(ctx.channel.id)
     user = bot.get_user(ctx.author.id)
@@ -99,13 +107,14 @@ async def speedtest(ctx):
 async def status(ctx):
     channel = bot.get_channel(ctx.channel.id)
     user = bot.get_user(ctx.author.id)
-    if debug_Flag:
+    if debugFlag:
         print('D: %s -- Main Thread -- Received this info from ctx.channel.id: %s' % (datetime.now(), channel))
     vmwareStats = vmwareGetStatus()
     for eachStat in vmwareStats:
         await channel.send(eachStat)
-    if debug_Flag:
-        print('D: %s -- Main Thread -- Received the following command: "status" from %s in channel %s' % (datetime.now(), user, channel))
+    if debugFlag:
+        print('D: %s -- Main Thread -- Received the following command: "status" from %s in channel %s' % (
+        datetime.now(), user, channel))
     else:
         print('I: %s -- Main Thread -- Received Request for Status' % datetime.now())
 
@@ -120,7 +129,8 @@ async def on_ready():
     print('I: %s -- Ready as {0.user}'.format(bot) % rightNow)
     readyChannel = bot.get_channel(announceChannel)
     await readyChannel.send('Server minions are online!')
-    await bot.change_presence(activity=discord.Game(name=gameName))
+    if config['gameName'] is not None:
+        await bot.change_presence(activity=discord.Game(name=gameName))
 
 
 @bot.event
@@ -133,13 +143,14 @@ async def on_message(message):
     if message.author == bot.user:
         return
 
-    if debug_Flag:
+    if debugFlag:
         channel = bot.get_channel(message.channel.id)
-        print('D: %s -- Main Thread -- Received a message in channel: %s from %s' % (datetime.now(), channel, message.author.display_name))
+        print('D: %s -- Main Thread -- Received a message in channel: %s from %s' % (
+        datetime.now(), channel, message.author.display_name))
     if message.content.startswith('Hello'):
-       if message.author.id != ownerID:
+        if message.author.id != ownerID:
             await message.channel.send('Hello %s you seem nice.' % message.author.display_name)
-       else:
+        else:
             await message.channel.send('Hello, master. We are here to serve.')
 
     await bot.process_commands(message)
@@ -149,24 +160,22 @@ async def on_message(message):
 async def on_connect():
     print('I: %s -- Main Thread -- Connected to Discord!' % datetime.now())
 
+
 def main():
-
-
     ##########################
     # Initialize Discord Bot #
     ##########################
-
-
-    # Prefix to be entered before commands
-    bot = commands.Bot(command_prefix='servers.')
 
     print('I: %s -- Main Thread -- Starting the webhook Thread...' % datetime.now())
     whThread = webhookThread()
     whThread.start()
 
-    print('I: %s -- Main Thread -- Starting the speedtest Thread...' % datetime.now())
-    spTestThread = speedtestThread()
-    spTestThread.start()
+    if config['speedTestDB'] != '':
+        print('I: %s -- Main Thread -- Starting the speedtest Thread...' % datetime.now())
+        spTestThread = speedtestThread()
+        spTestThread.start()
+    else:
+        print('I: %s -- Main Thread -- No speed test database was provided skipping thread...' % datetime.now())
 
     print('I: %s -- Main Thread -- Starting the Discord Bot Thread...' % datetime.now())
     bot.run(apiKey)

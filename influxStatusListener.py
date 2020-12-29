@@ -15,14 +15,18 @@ def dbListener():
     #######################
     configFile = open('config.json', "r")
     config = json.load(configFile)
+
+    if config['notificationDB'] == '':
+        print('W: %s -- Status Listener -- notificationDB not set exiting thread...' % str(dt.now()))  # Console logging
+        exit(1)
+
+    debugDBListner = config['debug']  # Change to True to see debugging logs
     mention = config['mention']  # Change to True if you'd like the notice to mention a user
-    debugDBListner = True  # Change to True to see debugging logs
-    timer = 15  # How frequently to poll in seconds
-    relativeTime = '5m'  # How far back in the database to look m=minutes, h=hours, d=days, w=weeks
-    series = 'Notifications'  # Name of the series you'd like to search through
+    timer = config['pollingRate']  # How frequently to poll in seconds
+
 
     if mention:
-        user = str(open("/opt/discordstatusbot/keys/myUserID.key", "r").read())  # Change to your user ID as a string or call from file
+        user = config['ownerID']  # Change to your user ID as a string or call from file
     else:
         user = None
 
@@ -36,7 +40,9 @@ def dbListener():
     dbPassword = config['dbPassword']  # Retrieve database password from file
     dbHostname = config['dbHost']  # Change to your database's IP or host name
     dbPort = config['dbPort']  # Change to your database's port; Default is 8086
-    dbName = config['truenasNotifyDB']  # Change to the name of the database you want to work on
+    dbName = config['notificationDB']  # Change to the name of the database you want to work on
+    series = config['dbSeries']  # Name of the series you'd like to search through
+
 
     print('I: %s -- Status Listener -- Creating connection to database...' % str(dt.now()))  # Console logging
 
@@ -49,9 +55,8 @@ def dbListener():
     oldHash = 0  # Initialize default values
 
 
-
     while True:                                                     # Always do this
-        results = dbClient.query('SELECT * FROM %s WHERE time > now() - %s' % (series, relativeTime))   # Database Query
+        results = dbClient.query('SELECT * FROM %s WHERE time > now() - 5m' % (series))   # Database Query
         hashCoding = str(results)                                   # Convert the ResultSet into a string
         hashedData = hashlib.sha1(hashCoding.encode('utf-8')).hexdigest()   # Hash the string, so we can compare it later
         if oldHash == hashedData:                                   # If hashes are equal do nothing
