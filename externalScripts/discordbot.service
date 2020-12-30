@@ -11,9 +11,9 @@ SuccessExitStatus=0 1 SIGKILL
 NoNewPrivileges=true
 PrivateTmp=true
 InaccessibleDirectories=/root /sys /srv /home /media /lost+found
-ReadWriteDirectories=/opt/data /var/log
+ReadWriteDirectories=/opt/data
 WorkingDirectory=/opt/discordstatusbot
-
+StandardOutput=journal+console
 ExecStart=/opt/discordstatusbot/startDiscordBot.sh
 
 [Install]
