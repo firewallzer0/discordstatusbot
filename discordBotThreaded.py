@@ -24,7 +24,6 @@ try:  # Try opening the config file
 
 except Exception:  # If it is not there
     print('E: %s -- Main Thread -- Unable to locate or read config.json...' % datetime.now())
-    configFile.close()
     exit(1)  # End the program with a status code of 1
 
 isValid, config = validateJSON(configFile)

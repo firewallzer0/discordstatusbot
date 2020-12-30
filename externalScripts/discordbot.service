@@ -1,5 +1,5 @@
 [Unit]
-Description=My Discord Bot minion
+Description=Discord Bot Minion
 After=network.target
 Wants=network.target
 
