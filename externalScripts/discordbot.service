@@ -10,8 +10,8 @@ PIDFile=/opt/discordstatusbot/running.pid
 SuccessExitStatus=0 1 SIGKILL
 NoNewPrivileges=true
 PrivateTmp=true
-InaccessiblePaths=/root /sys /srv /home /media /lost+found
-ReadWritePaths=/opt/data /var/log
+InaccessibleDirectories=/root /sys /srv /home /media /lost+found
+ReadWriteDirectories=/opt/data /var/log
 WorkingDirectory=/opt/discordstatusbot
 
 ExecStart=/opt/discordstatusbot/startDiscordBot.sh
