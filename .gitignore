@@ -8,3 +8,5 @@ __pycache__/*
 
 # Ignore the config
 config.json
+latest.json
+latest.sha256

@@ -45,11 +45,14 @@ def dbListener():
 
 
     print('I: %s -- Status Listener -- Creating connection to database...' % str(dt.now()))  # Console logging
-
-    dbClient = InfluxDBClient(host=dbHostname, port=dbPort, username=dbUser, password=dbPassword)  # Connect to database
-    if debugDBListner:  # Debug console logging
-        print('D: %s -- Status Listener -- Switching to %s database...' % (str(dt.now()), dbName))  # Debug console logging
-    dbClient.switch_database('%s' % dbName)  # Select the database you what to use.
+    try:
+        dbClient = InfluxDBClient(host=dbHostname, port=dbPort, username=dbUser, password=dbPassword)  # Connect to database
+        if debugDBListner:  # Debug console logging
+            print('D: %s -- Status Listener -- Switching to %s database...' % (str(dt.now()), dbName))  # Debug console logging
+        dbClient.switch_database('%s' % dbName)  # Select the database you what to use.
+    except Exception as err:
+        print('E: %s -- Status Listener -- Error creating connection to database...' % str(dt.now()))   # Console logging
+        print('E: %s -- Status Listener -- %s' % str(dt.now()), err)   # Console logging
 
     # hashedData = 0  # Initialize default values
     oldHash = 0  # Initialize default values
@@ -85,8 +88,7 @@ def dbListener():
                     print('I: %s -- Status Listener -- Calling webhook... \n %s' % (str(dt.now()), notice))    # Console logging
 
                     # Call the webhook passing the address from file and the message built above and the user to mention
-                    url = open("/opt/discordstatusbot/keys/discordWebHook-serversStatusChannel.key", "r").read()
-                    webhook(url=str(), message=notice, discordUser=user)
+                    webhook(url=str(config['statusChannelWebhook']), message=notice, discordUser=user)
         if debugDBListner:                                                                   # Debug console logging
-            print('D: %s -- Status Listener -- Sleeping for %d seconds...' % (str(dt.now()), timer))   # Debug console logging
-        sleep(timer)                                                # How often do you want to poll the database? Set above
+            print('D: %s -- Status Listener -- Sleeping for %s seconds...' % (str(dt.now()), timer))   # Debug console logging
+        sleep(int(timer))                                                # How often do you want to poll the database? Set above
