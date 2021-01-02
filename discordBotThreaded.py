@@ -9,24 +9,21 @@ from getSpeedTest import getSpeedTest
 from speedtest_import import importSpeedtest
 from validateJSON import validateJSON
 
-########################################################################################################################
-#                                      NEED TO ADD MORE VARIABLES aka debug setting passed to all sub-scripts          #
-########################################################################################################################
-
 ###########################
 # Startup Initialization  #
 ###########################
 
 print('I: %s -- Main Thread -- Initializing Discord Status Bot...' % datetime.now())  # Print console log
 print('I: %s -- Main Thread -- Opening config file...' % datetime.now())  # Print console log
-try:  # Try opening the config file
-    configFile = open('config.json', "r")
+
+try:
+    configFile = open('config.json', "r")   # Try opening the config file
 
 except Exception:  # If it is not there
     print('E: %s -- Main Thread -- Unable to locate or read config.json...' % datetime.now())
     exit(1)  # End the program with a status code of 1
 
-isValid, config = validateJSON(configFile)
+isValid, config = validateJSON(configFile)  # Check if the json is valid
 
 if isValid:
     pass

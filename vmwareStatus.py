@@ -73,9 +73,8 @@ def vmwareGetStatus():
     for totalUptime in uptimeResults:
         # print(totalUptime)
         uptimeValue = int(totalUptime[0]["Uptime"])
-        seconds = uptimeValue % (7 * 24 * 3600)
-        seconds %= (7 * 24 * 3600)
-        weeks = seconds // (7 * 24 * 3600)
+        seconds = uptimeValue % (10 * 52 * 7 * 24 * 3600)   # 10 years, 52 weeks, 7 days, 24 hours, 3600 seconds
+        weeks %= seconds // (7 * 24 * 3600)
         seconds %= (7 * 24 * 3600)
         days = seconds // (24 * 3600)
         seconds %= (24 * 3600)
