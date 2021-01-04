@@ -4,25 +4,23 @@ import time
 import json
 
 
-# noinspection PyUnresolvedReferences
 def vmwareGetStatus():
 
-    configFile = open('config.json', "r")
-    config = json.load(configFile)
-
+    configFile = open('config.json', "r")   # Open config.json file for reading
+    config = json.load(configFile)      # Load json data into memory
+    configFile.close()      # Close config.json file
 
     #######################
     # Configure variables #
     #######################
     debugVMwareStatus = config['debug']  # Change to True to see debugging logs
-    relativeTime = '1h'  # How far back in the database to look m=minutes, h=hours, d=days, w=weeks
 
     ############################
     # Setup for database calls #
     ############################
 
     if debugVMwareStatus:  # Debug console logging
-        print('D: %s -- Initializing for database connection...' % str(dt.now()))  # Debug console logging
+        print('D: %s -- vmwareStatus -- Initializing for database connection...' % str(dt.now()))  # Debug console logging
 
     dbUser = config['dbUser']  # Set database user
     dbPassword = config['dbPassword']  # Retrieve database password from file
@@ -30,12 +28,12 @@ def vmwareGetStatus():
     dbPort = config['dbPort']  # Change to your database's port; Default is 8086
     dbName = config['vmwareStatsDB']  # Change to the name of the database you want to work on
 
-    print('I: %s -- Creating connection to database...' % str(dt.now()))  # Console logging
+    print('I: %s -- vmwareStatus -- Creating connection to database...' % str(dt.now()))  # Console logging
 
     dbClient = InfluxDBClient(host=dbHostname, port=dbPort, username=dbUser, password=dbPassword)  # Connect to database
 
     if debugVMwareStatus:  # Debug console logging
-        print('D: %s -- Switching to %s database...' % (str(dt.now()), dbName))  # Debug console logging
+        print('D: %s -- vmwareStatus -- Switching to %s database...' % (str(dt.now()), dbName))  # Debug console logging
 
     dbClient.switch_database('%s' % dbName)  # Select the database you what to use.
 
@@ -43,7 +41,7 @@ def vmwareGetStatus():
     pwrMessageESX01 = None
     pwrMessageESX02 = None
 
-    print('I: %s -- Querying database now...' % str(dt.now()))  # Console logging
+    print('I: %s -- vmwareStatus -- Querying database now...' % str(dt.now()))  # Console logging
 
     cpuResults = dbClient.query('SELECT percentile("usage_average", 95) FROM "vsphere_host_cpu" WHERE ("vcenter" = \'10.1.1.46\') AND (time >= now() - 30m)')  # Database Query
     # cpuResults = dbClient.query('SELECT percentile("usage_average", 95) FROM "vsphere_host_cpu" WHERE (esxhostname = \'10.1.1.9\') AND (time >= now() - 30m)')  # Database Query
@@ -59,19 +57,16 @@ def vmwareGetStatus():
 
     pwrResultsESX01 = dbClient.query('SELECT mean("power_average") AS "Watts" FROM "vsphere_host_power" WHERE ("esxhostname" = \'10.1.1.7\' AND time >= now() - 30m)')  # Database Query
     for pwrUsageESX01 in pwrResultsESX01:
-        # print(pwrUsageESX01)
         clusterPWRusageESX01 = str(round(pwrUsageESX01[0]["Watts"]))
         pwrMessageESX01 = ('Power usage for ESX01 is: %s Watts' % clusterPWRusageESX01)
 
     pwrResultsESX02 = dbClient.query('SELECT mean("power_average") AS "Watts" FROM "vsphere_host_power" WHERE ("esxhostname" = \'10.1.1.9\' AND time >= now() - 30m)')  # Database Query
     for pwrUsageESX02 in pwrResultsESX02:
-        # print(pwrUsageESX02)
         clusterPWRusageESX02 = str(round(pwrUsageESX02[0]["Watts"]))
         pwrMessageESX02 = ('Power usage for ESX02 is: %s Watts' % clusterPWRusageESX02)
 
     uptimeResults = dbClient.query('SELECT last("uptime_latest") AS "Uptime" FROM "vsphere_host_sys" WHERE ("vcenter" = \'10.1.1.46\' AND "clustername" = \'Cluster 1\') AND time >= now() - 30m')
     for totalUptime in uptimeResults:
-        # print(totalUptime)
         uptimeValue = int(totalUptime[0]["Uptime"])
         seconds = uptimeValue % (10 * 52 * 7 * 24 * 3600)   # 10 years, 52 weeks, 7 days, 24 hours, 3600 seconds
         weeks = seconds // (7 * 24 * 3600)
@@ -89,15 +84,14 @@ def vmwareGetStatus():
         startMessage = "The servers have been up since: %s" % startTime
 
 
+    print('I: %s -- vmwareStatus -- Returning stats...' % str(dt.now()))  # Console logging
     if pwrMessageESX01 == None:
         if pwrMessageESX02 == None:
             return [startMessage, cpuMessage, ramMessage, uptimeMessage]
         else:
-            return [startMessage,cpuMessage, ramMessage, pwrMessageESX02, uptimeMessage]
+            return [startMessage, cpuMessage, ramMessage, pwrMessageESX02, uptimeMessage]
     else:
         if pwrMessageESX02 == None:
             return [startMessage, cpuMessage, ramMessage, pwrMessageESX01, uptimeMessage]
         else:
             return [startMessage, cpuMessage, ramMessage, pwrMessageESX01, pwrMessageESX02, uptimeMessage]
-
-# print(vmwareGetStatus())
