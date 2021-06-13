@@ -43,13 +43,13 @@ def vmwareGetStatus():
 
     print('I: %s -- vmwareStatus -- Querying database now...' % str(dt.now()))  # Console logging
 
-    cpuResults = dbClient.query('SELECT percentile("usage_average", 95) FROM "vsphere_host_cpu" WHERE ("vcenter" = \'10.1.1.46\') AND (time >= now() - 30m)')  # Database Query
+    cpuResults = dbClient.query('SELECT percentile("usage_average", 95) FROM "vsphere_host_cpu" WHERE (time >= now() - 30m)')  # Database Query
     # cpuResults = dbClient.query('SELECT percentile("usage_average", 95) FROM "vsphere_host_cpu" WHERE (esxhostname = \'10.1.1.9\') AND (time >= now() - 30m)')  # Database Query
     for cpuUsage in cpuResults:
         clusterCPUusage = str(cpuUsage[0]["percentile"])
         cpuMessage = 'CPU usage is: %s%s' % (clusterCPUusage, percentSign)
 
-    ramResults = dbClient.query('SELECT last("usage_average") FROM "vsphere_host_mem" WHERE ("vcenter" = \'10.1.1.46\') AND time >= now() - 30m AND "last" != "None" GROUP BY time(1m)')  # Database Query
+    ramResults = dbClient.query('SELECT last("usage_average") FROM "vsphere_host_mem" WHERE time >= now() - 30m AND "last" != "None" GROUP BY time(1m)')  # Database Query
     for ramUsage in ramResults:
         # print(ramUsage)
         clusterRAMusage = str(ramUsage[1]["last"])
@@ -65,7 +65,7 @@ def vmwareGetStatus():
         clusterPWRusageESX02 = str(round(pwrUsageESX02[0]["Watts"]))
         pwrMessageESX02 = ('Power usage for ESX02 is: %s Watts' % clusterPWRusageESX02)
 
-    uptimeResults = dbClient.query('SELECT last("uptime_latest") AS "Uptime" FROM "vsphere_host_sys" WHERE ("vcenter" = \'10.1.1.46\' AND "clustername" = \'Cluster 1\') AND time >= now() - 30m')
+    uptimeResults = dbClient.query('SELECT last("uptime_latest") AS "Uptime" FROM "vsphere_host_sys" WHERE time >= now() - 30m')
     for totalUptime in uptimeResults:
         uptimeValue = int(totalUptime[0]["Uptime"])
         seconds = uptimeValue % (10 * 52 * 7 * 24 * 3600)   # 10 years, 52 weeks, 7 days, 24 hours, 3600 seconds
