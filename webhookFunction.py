@@ -11,11 +11,11 @@ def discordWebhook(url, message, discordUser=None):
 
     if discordUser is not None:
         discord_data = {
-            "content": "<@%s> \n %s: " % (discordUser, message)
+            "content": "<@%s> \n %s" % (discordUser, message)
         }
     else:
         discord_data = {
-            "content": "%s: " % message
+            "content": "%s" % message
         }
 
     byte_length = str(sys.getsizeof(discord_data))
