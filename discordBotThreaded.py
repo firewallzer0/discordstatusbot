@@ -35,7 +35,7 @@ else:
 # Startup Variables  #
 ######################
 print('I: %s -- Main Thread -- Assigning config file variables...' % datetime.now())  # Print console log
-botVersion = ['v0.1.0', '2020-12-24']  # Store the bot version and release date
+botVersion = "v0.1.0"  # Store the bot version and release date
 configVersion = config['configVersion']
 debugFlag = config['debug']
 apiKey = config['apiKey']
@@ -87,7 +87,7 @@ async def bottime(ctx):
 @bot.command()
 async def botversion(ctx):
     channel = bot.get_channel(ctx.channel.id)
-    await channel.send('Bot version is %s\nConfig version is %s' % botVersion, configVersion)
+    await channel.send('Bot version is %s\nConfig version is %s' % (botVersion, configVersion))
 
 
 @bot.command()
