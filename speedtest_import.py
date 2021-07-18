@@ -99,3 +99,4 @@ def importSpeedtest():
         except Exception as err:
             print('E: %s -- Speed test -- Error reading and processing JSON...' % str(dt.now()))  # Console logging
             print('E: %s -- Speed test -- %s' % (str(dt.now()), str(err)))  # Console logging
+            sleep(300)
